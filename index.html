@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <title>Document</title>
+    <style>
+        .waterfall {
+            margin: 0 auto;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .waterfall img {
+            width: 100px;
+            position: absolute;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="waterfall">
+        <img src="https://picsum.photos/100/70" alt="300*100">
+        <img src="https://picsum.photos/100/100" alt="300*100">
+        <img src="https://picsum.photos/100/110" alt="300*100">
+        <img src="https://picsum.photos/100/80" alt="300*100">
+        <img src="https://picsum.photos/100/70" alt="300*100">
+        <img src="https://picsum.photos/100/90" alt="300*100">
+        <img src="https://picsum.photos/100/78" alt="300*100">
+        <img src="https://picsum.photos/100/66" alt="300*100">
+        <img src="https://picsum.photos/100/70" alt="300*100">
+        <img src="https://picsum.photos/100/100" alt="300*100">
+        <img src="https://picsum.photos/100/110" alt="300*100">
+        <img src="https://picsum.photos/100/80" alt="300*100">
+        <img src="https://picsum.photos/100/70" alt="300*100">
+        <img src="https://picsum.photos/100/90" alt="300*100">
+        <img src="https://picsum.photos/100/78" alt="300*100">
+        <img src="https://picsum.photos/100/66" alt="300*100">
+        <img src="https://picsum.photos/100/80" alt="300*100">
+        <img src="https://picsum.photos/100/90" alt="300*100">
+        <img src="https://picsum.photos/100/100" alt="300*100">
+        <img src="https://picsum.photos/100/95" alt="300*100">
+        <img src="https://picsum.photos/100/75" alt="300*100">
+        <img src="https://picsum.photos/100/80" alt="300*100">
+        <img src="https://picsum.photos/100/89" alt="300*100">
+        <img src="https://picsum.photos/100/105" alt="300*100">
+        <img src="https://picsum.photos/100/80" alt="300*100">
+        <img src="https://picsum.photos/100/90" alt="300*100">
+        <img src="https://picsum.photos/100/100" alt="300*100">
+        <img src="https://picsum.photos/100/95" alt="300*100">
+        <img src="https://picsum.photos/100/75" alt="300*100">
+        <img src="https://picsum.photos/100/80" alt="300*100">
+        <img src="https://picsum.photos/100/89" alt="300*100">
+        <img src="https://picsum.photos/100/105" alt="300*100">
+        <img src="https://picsum.photos/100/70" alt="300*100">
+        <img src="https://picsum.photos/100/100" alt="300*100">
+        <img src="https://picsum.photos/100/110" alt="300*100">
+        <img src="https://picsum.photos/100/80" alt="300*100">
+        <img src="https://picsum.photos/100/70" alt="300*100">
+        <img src="https://picsum.photos/100/90" alt="300*100">
+        <img src="https://picsum.photos/100/78" alt="300*100">
+        <img src="https://picsum.photos/100/66" alt="300*100">
+        <img src="https://picsum.photos/100/80" alt="300*100">
+        <img src="https://picsum.photos/100/90" alt="300*100">
+        <img src="https://picsum.photos/100/100" alt="300*100">
+        <img src="https://picsum.photos/100/95" alt="300*100">
+        <img src="https://picsum.photos/100/75" alt="300*100">
+        <img src="https://picsum.photos/100/80" alt="300*100">
+        <img src="https://picsum.photos/100/89" alt="300*100">
+        <img src="https://picsum.photos/100/105" alt="300*100">
+    </div>
+
+    <script>
+        //列数
+        var colCount
+        //列高数组
+        var coLHeightArray = []
+        //图片宽
+        var imgWidth = $('.waterfall img').outerWidth(true)
+        colCount = Math.floor(($('.waterfall').width() / imgWidth))
+        for (var i = 0; i < colCount; i++) {
+            coLHeightArray[i] = 0
+        }
+        //[0,0,0]
+        $('.waterfall img').on('load', function () {
+            var minValue = coLHeightArray[0]
+            var minIndex = 0
+            for (var i = 0; i < colCount; i++) {
+                if (coLHeightArray[i] < minValue) {
+                    minValue = coLHeightArray[i]
+                    minIndex = i
+                }
+            }
+            $(this).css({
+                left: minIndex * imgWidth,
+                top: minValue
+            })
+            coLHeightArray[minIndex] += $(this).outerHeight(true)
+        })
+
+    </script>
+</body>
+
+</html>
