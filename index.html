@@ -74,8 +74,8 @@
         <img src="https://picsum.photos/100/89" alt="300*100">
         <img src="https://picsum.photos/100/105" alt="300*100">
     </div>
-
     <script>
+        /*
         //列数
         var colCount
         //列高数组
@@ -109,6 +109,7 @@
         $(window).on('resize', function () {
             coLHeightArray = []
             colCount = Math.floor(($('.waterfall').width() / imgWidth))
+
             for (var i = 0; i < colCount; i++) {
                 coLHeightArray[i] = 0
             }
@@ -128,6 +129,124 @@
                 coLHeightArray[minIndex] += $(this).outerHeight(true)
             })
         })
+        */
+
+
+        // var waterfall = {
+        //     init: function () {
+        //         this.colCount = 0
+        //         this.coLHeightArray = []
+        //         this.imgWidth = $('.waterfall img').outerWidth(true)
+        //         this.colCount = Math.floor(($('.waterfall').width() / this.imgWidth))
+        //         for (var i = 0; i < this.colCount; i++) {
+        //             this.coLHeightArray[i] = 0
+        //         }
+
+        //         this.bind()
+        //     },
+        //     bind: function () {
+        //         var _this = this
+        //         $('.waterfall img').on('load', function () {
+        //             _this.layout($(this))
+        //         })
+
+
+        //         $(window).on('resize', function () {
+        //             $('.waterfall img').each(function () {
+        //                 _this.layout($(this))
+        //             })
+
+        //         })
+
+        //     },
+        //     layout: function ($node) {
+        //         var minValue = this.coLHeightArray[0]
+        //         var minIndex = 0
+        //         for (var i = 0; i < this.colCount; i++) {
+        //             if (this.coLHeightArray[i] < minValue) {
+        //                 minValue = this.coLHeightArray[i]
+        //                 minIndex = i
+        //             }
+        //         }
+        //         $($node).css({
+        //             left: minIndex * this.imgWidth,
+        //             top: minValue
+        //         })
+        //         this.coLHeightArray[minIndex] += $($node).outerHeight(true)
+
+        //     }
+        // }
+        // waterfall.init()
+
+        var waterfall = {
+            init: function () {
+                this.colCount = 0;
+                this.coLHeightArray = [];
+                this.imgWidth = $('.waterfall img').outerWidth(true);
+                this.colCount = Math.floor(($('.waterfall').width() / this.imgWidth));
+                for (var i = 0; i < this.colCount; i++) {
+                    this.coLHeightArray[i] = 0;
+                }
+
+                this.bind();
+                this.lazyLoad();
+            },
+
+            bind: function () {
+                var _this = this;
+                $(window).on('resize', function () {
+                    _this.imgWidth = $('.waterfall img').outerWidth(true);
+                    _this.colCount = Math.floor(($('.waterfall').width() / _this.imgWidth));
+                    _this.coLHeightArray = [];
+                    for (var i = 0; i < _this.colCount; i++) {
+                        _this.coLHeightArray[i] = 0;
+                    }
+                    $('.waterfall img').each(function () {
+                        _this.layout($(this));
+                    });
+                });
+
+                $('.waterfall img').each(function () {
+                    $(this).hide();
+                    $(this).on('load', function () {
+                        _this.layout($(this));
+                        $(this).fadeIn();
+                    });
+
+                });
+            },
+
+            layout: function ($node) {
+                var minValue = this.coLHeightArray[0];
+                var minIndex = 0;
+                for (var i = 0; i < this.colCount; i++) {
+                    if (this.coLHeightArray[i] < minValue) {
+                        minValue = this.coLHeightArray[i];
+                        minIndex = i;
+                    }
+                }
+                $($node).css({
+                    left: minIndex * this.imgWidth,
+                    top: minValue
+                });
+                this.coLHeightArray[minIndex] += $($node).outerHeight(true);
+            },
+
+            lazyLoad: function () {
+                var _this = this;
+                var $imgs = $('.waterfall img');
+                $(window).on('scroll', function () {
+                    $imgs.each(function () {
+                        if ($(this).offset().top < $(window).scrollTop() + $(window).height() && !$(this).attr('src')) {
+                            $(this).attr('src', $(this).data('src'));
+                        }
+                    });
+                });
+            }
+        };
+
+        waterfall.init();
+
     </script>
 </body>
 
