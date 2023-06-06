@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <title>瀑布流新闻站</title>
+    <style>
+        html,
+        body,
+        ul,
+        li,
+        p {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        ul,
+        li {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .clearfix::after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+
+        .ct {
+            position: relative;
+            padding: 10px;
+            margin: 0 auto;
+        }
+
+        .ct .item {
+            width: 200px;
+            position: absolute;
+            padding: 0 0 10px 0;
+            border: 1px solid #dfdfdf;
+            box-shadow: 2px 2px 2px #e8e8e8, -2px -2px 2px #e8e8e8;
+            background: #fff;
+            margin: 10px;
+            transition: all .8s;
+        }
+
+        .ct .item img {
+            width: 178px;
+            margin: 12px;
+        }
+
+        .ct .item .header {
+            height: 25px;
+            margin: 0 12px;
+            border-bottom: 1px solid #d8d8d8;
+        }
+
+        .ct .item .desp {
+            margin: 12px;
+            font-size: 12px;
+            line-height: 1.8;
+            margin: 10px 15px 0;
+            color: #777371;
+            overflow: hidden;
+        }
+
+
+
+        #load {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ct-waterfall">
+        <ul id="pic-ct" class="ct clearfix">
+            <!-- <li class="item">
+                <a href="#" class="link">
+                    <img src="https://picsum.photos/100/70" alt="">
+                </a>
+                <h4 class="header">标题</h4>
+                <p class="desp">
+                    当地时间2020年...........................................
+                </p>
+            </li> -->
+        </ul>
+        <div id="load">就获取下面的数据了我出现的时候</div>
+    </div>
+
+    <script>
+        // 1.获取page=1的10条数据
+        // 2.把10条数据拼装成dom放到页面
+        // 3.使用瀑布流摆放dom位置
+        //4.page++
+        // 当页面滚动（或者某个条件下）这里是当load出现的时候
+
+        // 1.获取page的10条数据
+        // 2.把10条数据拼装成dom放到页面
+        // 3.使用瀑布流摆放dom位置
+        //4.page++
+
+        var curPage = 1,
+            perPageCount = 30
+        var $target = $('#load')
+        var colSumHeight = []
+
+        $(window).on('scroll', function () {
+            checkShow()
+        })
+        checkShow()
+        function checkShow() {
+            if (isShow($target)) {
+                dosth()
+            }
+        }
+        function isShow($el) {
+            var scrollH = $(window).scrollTop()
+            var winH = $(window).height()
+            var top = $el.offset().top
+            if (top < scrollH + winH) {
+                return true
+            } else {
+                return false
+            }
+        }
+
+
+
+
+        function dosth() {
+            $.ajax({
+                url: 'https://photo.sina.cn/aj/v2/index',
+                type: 'get',
+                dataType: 'jsonp',
+                jsonp: 'callback',
+                data: {
+                    cate: 'military',
+                    pagesize: perPageCount,
+                    page: curPage
+                }
+            }).done(function (ret) {
+                console.log(ret);
+                if (ret && ret.code == 1) {
+                    var dataArr = ret.data
+                    var $nodes = renderData(dataArr)
+                    // callback(ret.data);   //如果数据没问题，那么生成节点并摆放好位置
+
+                    render($nodes)
+                    curPage++
+                } else {
+                    console.log('get error data');
+                }
+            })
+        }
+
+        function renderData(item) {
+            var tpl = ''
+            var $nodes
+            for (var i = 0; i < item.length; i++) {
+                tpl += '<li class="item">'
+                tpl += '<a href="' + item[i] + '" class="link"><img src=" ' + item[i].thumb + '" alt=""></a>'
+                tpl += '<h4 class="header">' + item[i].stitle + '</h4>'
+                tpl += '<p class="desp">' + item[i].title + '</p>'
+                tpl += '</li>'
+            }
+            $nodes = $(tpl)
+            $('#pic-ct').append($nodes)
+            return $nodes
+        }
+
+        function render($nodes) {
+            var nodeWidth = $nodes.outerWidth(true),
+                colNum = parseInt($(window).width() / nodeWidth)
+            if (colSumHeight.length == 0) {
+                for (var i = 0; i < colNum; i++) {
+                    colSumHeight.push(0)
+                }
+            }
+            $nodes.each(function () {
+                var $cur = $(this)
+                $(this).find('img').on('load', function () {
+                    var idx = 0,
+                        minSumHeight = colSumHeight[0]
+                    for (var i = 0; i < colSumHeight.length; i++) {
+                        if (colSumHeight[i] < minSumHeight) {
+                            idx = i
+                            minSumHeight = colSumHeight[i]
+                        }
+                        $cur.css({
+                            top: minSumHeight,
+                            left: nodeWidth * idx,
+
+                        })
+                    }
+                    colSumHeight[idx] += $cur.outerHeight(true)
+                })
+
+            })
+        }
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
